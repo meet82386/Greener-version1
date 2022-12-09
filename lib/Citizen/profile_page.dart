@@ -27,6 +27,9 @@ class _ProfilePageState extends State<ProfilePage> {
   String fname = "a";
   String lname = "a";
   String email = "a";
+  String birthDate = "a";
+  String role = "a";
+  var mno;
 
   void getData() async {
     User? user = await FirebaseAuth.instance.currentUser;
@@ -39,6 +42,9 @@ class _ProfilePageState extends State<ProfilePage> {
       lname = vari.data()!['lname'];
       email = vari.data()!['email'];
       imageUrl = vari.data()!['profile-image'];
+      birthDate = vari.data()!['birthDate'];
+      role = vari.data()!['role'];
+      mno = vari.data()!['mobile'].toString();
     });
   }
 
@@ -50,6 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final user = UserPreferences.myUser;
+    getData();
 
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
@@ -61,16 +68,6 @@ class _ProfilePageState extends State<ProfilePage> {
         title: Text(
           "Greener",
         ),
-
-        /*actions: [
-          Tooltip(
-              message: 'Log Out',
-              child: IconButton(
-                  onPressed: () {
-                    AuthController.instance.logout();
-                  },
-                  icon: Icon(Icons.logout)))
-        ],*/
       ),
 
       drawer: HamBurger(),
@@ -90,8 +87,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       children: [
                         Container(
                             margin: EdgeInsets.only(top: 10),
-                            height: 180,
-                            width: 200,
+                            height: 150,
+                            width: 150,
                             color: Colors.black12,
                             child: imageUrl == ''
                                 ? Icon(
@@ -101,19 +98,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                 : Scaffold(
                                     body: Image.network(imageUrl),
                                   )),
-                        // Container(
-                        //   width: 120,
-                        //   height: 120,
-                        //   margin: EdgeInsets.only(
-                        //     top: 30,
-                        //   ),
-                        //   decoration: BoxDecoration(
-                        //     shape: BoxShape.circle,
-                        //     image: DecorationImage(
-                        //         image: NetworkImage(imagePath),
-                        //         fit: BoxFit.fill),
-                        //   ),
-                        // ),
                         Positioned(
                           bottom: 0,
                           right: 0,
@@ -121,13 +105,21 @@ class _ProfilePageState extends State<ProfilePage> {
                             width: 35,
                             height: 35,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(100),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.white.withOpacity(0.5),
+                                  spreadRadius: 5,
+                                  blurRadius: 7,
+                                ),
+                              ],
                               color: Colors.green,
+                              borderRadius: BorderRadius.circular(25),
                             ),
                             child: InkWell(
                               child: Icon(
                                 Icons.edit,
                                 size: 20,
+                                color: Colors.white,
                               ),
                               onTap: () async {
                                 ImagePicker imagePicker = ImagePicker();
@@ -174,41 +166,122 @@ class _ProfilePageState extends State<ProfilePage> {
                                 }
                               },
                             ),
-                            /*child: Column(
-                            children: [
-                              Icon(Icons.edit,
-                              size: 28,)
-                            ],
-                          ),*/
                           ),
                         ),
                       ],
                     ),
-                    Container(
+                    SizedBox(
                       height: 20,
-                      width: 100,
-                      margin: EdgeInsets.only(right: 40, left: 60),
-                      child: Row(
+                    ),
+                    Container(
+                      child: Column(
                         children: <Widget>[
                           Text(
-                            fname,
+                            "$fname $lname",
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 22,
                             ),
                           ),
-                          Text(" "),
-                          Text(
-                            lname,
-                            style: TextStyle(
-                              fontSize: 20,
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Divider(
+                            thickness: 3,
+                            color: Colors.black,
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          Container(
+                            // width: 280,
+                            // height: 50,
+                            // margin: EdgeInsets.only(right: 40),
+                            child: Column(
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.email,
+                                      color: Colors.black54,
+                                      size: 20,
+                                    ),
+                                    Text(
+                                      ' E-mail ID: $email',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.phone,
+                                      color: Colors.black54,
+                                      size: 20,
+                                    ),
+                                    Text(
+                                      ' Mobile Number: $mno',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      maxLines: 2,
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.calendar_month,
+                                      color: Colors.black54,
+                                      size: 20,
+                                    ),
+                                    // Text("  "),
+                                    // Text("  "),
+                                    Text(
+                                      ' Birth Date: $birthDate',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    Icon(
+                                      Icons.format_list_bulleted_rounded,
+                                      color: Colors.black54,
+                                      size: 20,
+                                    ),
+                                    Text(
+                                      ' Role: $role',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      maxLines: 2,
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    Text(
-                      email,
-                      style: TextStyle(fontSize: 16),
                     ),
                   ],
                 ),
@@ -219,152 +292,4 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-
-/*Widget displayImage(){
-    if(image == null) {
-      return Text("No Image Selected");
-    }else{
-      return Image.file(image);
-    }
-
-  }*/
-
 }
-
-/*
-
-      // buildAppBar(context),
-      body: ListView(
-        physics: BouncingScrollPhysics(),
-        children: [
-          const SizedBox(height: 24),
-          ProfileWidget(
-            imagePath: user.imagePath,
-            onClicked: () async {},
-          ),
-          const SizedBox(height: 24),
-          buildName(user),
-          const SizedBox(height: 24),
-          // Center(child: buildUpgradeButton()),
-          // const SizedBox(height: 24),
-          NumbersWidget(),
-          const SizedBox(height: 24),
-          // buildAbout(user),
-          // const SizedBox(height: 24),
-          planted_tree(user, 'Neem', '29/11/2022', 'Birthday'),
-          planted_tree(user, 'Pipal', '15/12/2022', 'Marriage Anniversary'),
-          planted_tree(user, 'Neem', '14/02/2023', 'Velentine Day'),
-          // const SizedBox(height: 24),
-          // Center(child: logout()),
-        ],
-      ),
-    );
-  }
-
-  Widget buildName(User user) => Column(
-        children: [
-          Text(
-            user.name,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            user.email,
-            style: TextStyle(color: Colors.green[900]),
-          )
-        ],
-      );
-
-  // Widget buildUpgradeButton() => ButtonWidget(
-  //       text: 'Upgrade To PRO',
-  //       onClicked: () {},
-  //     );
-
-  Widget planted_tree(User user, String Tname, String date, String cele) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-
-    return Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.white.withOpacity(0.5),
-              spreadRadius: 5,
-              blurRadius: 7,
-            ),
-          ],
-          color: Colors.green,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        height: height * 0.12,
-        child: Row(
-          children: [
-            SizedBox(
-              width: 8,
-            ),
-            Container(
-                width: 60,
-                child: CircleAvatar(
-                  radius: 30,
-                  backgroundImage: NetworkImage(
-                      "https://images.app.goo.gl/f1m9tXorJtjdhCFy6"),
-                )),
-
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Tree Name : $Tname",
-                    style: TextStyle(fontSize: 17),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    "Plantation Date : $date",
-                    style: TextStyle(fontSize: 17),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    "Celebration : $cele",
-                    style: TextStyle(fontSize: 17),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildAbout(User user) => Container(
-        padding: EdgeInsets.symmetric(horizontal: 48),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'About',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              user.about,
-              style: TextStyle(fontSize: 16, height: 1.4),
-            ),
-          ],
-        ),
-      );
-
-  Widget logout() => ButtonWidget(
-        text: 'Log Out',
-        onClicked: () {
-          AuthController.instance.logout();
-        },
-      );
-}
-*/

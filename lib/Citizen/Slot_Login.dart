@@ -3,15 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:greener_v1/Citizen/local_noti_service.dart';
-
-import 'notification.dart';
-
 import 'package:firebase_database/firebase_database.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:greener_v1/Citizen/show_notification_api.dart';
+import 'package:greener_v1/controllers/auth_controller.dart';
 
 class Slot_Login extends StatefulWidget {
-  Slot_Login({Key? key, required this.area}) : super(key: key);
+  const Slot_Login({Key? key, required this.area}) : super(key: key);
   final String area;
 
   @override
@@ -31,18 +29,39 @@ class _Slot_LoginState extends State<Slot_Login> {
   var nameController = new TextEditingController();
   var mnoController = new TextEditingController();
   var dateController = new TextEditingController();
-  late final LocalNotificationService service;
+
+  int? free, subscription;
   late DatabaseReference dbRef;
   CollectionReference users =
       FirebaseFirestore.instance.collection('AskToPlant');
 
-  @override
-  void initState() {
-    service = LocalNotificationService();
-    service.initialize();
-    listenToNotification();
-    dbRef = FirebaseDatabase.instance.ref().child('AskToPlant');
-    super.initState();
+  getUserFromDBUser() async {
+    //return FirebaseFirestore.instance.collection('users').doc(userId).get();
+    final vari = await FirebaseFirestore.instance
+        .collection('counter')
+        .doc('Zc46be3BLL4nniTDk72R')
+        .get();
+    setState(() {
+      free = vari.data()!['free'];
+      subscription = vari.data()!['paid'];
+    });
+    return 1;
+  }
+
+  void getNameAndNumber() async {
+    //return FirebaseFirestore.instance.collection('users').doc(userId).get();
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: auth.currentUser!.email.toString())
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      // Getting data directly
+      nameController.text = doc.get('fname');
+      mnoController.text = doc.get('mobile').toString();
+    }
+
+    setState(() {});
   }
 
   void toast(String s) {
@@ -59,8 +78,11 @@ class _Slot_LoginState extends State<Slot_Login> {
   List<String> plan = ["Free", "Subscription"];
   String? selectedPlan = 'Free';
 
+  var collection = FirebaseFirestore.instance.collection('counter');
+
   @override
   Widget build(BuildContext context) {
+    getNameAndNumber();
     double w = MediaQuery.of(context).size.width;
     double h = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -94,56 +116,56 @@ class _Slot_LoginState extends State<Slot_Login> {
               SizedBox(
                 height: 30,
               ),
-              Row(
-                children: [
-                  Text(
-                    "Plans:",
-                    style: TextStyle(fontSize: 20, color: Colors.green[600]),
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                          blurRadius: 10,
-                          spreadRadius: 7,
-                          offset: Offset(1, 1),
-                          color: Colors.grey.withOpacity(0.2))
-                    ]),
-                margin: EdgeInsets.only(top: 5, left: 3),
-                child: SizedBox(
-                    width: w * 0.99,
-                    child: DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
-                        // enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 3,color:Colors.green)),
-                        focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
-                            borderSide:
-                                BorderSide(color: Colors.white, width: 1.0)),
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30),
-                            borderSide:
-                                BorderSide(color: Colors.white, width: 1.0)),
-                        // border: OutlineInputBorder(
-                        //     borderRadius: BorderRadius.circular(30))),
-                      ),
-                      value: selectedPlan,
-                      items: plan
-                          .map((item) =>
-                              DropdownMenuItem(value: item, child: Text(item)))
-                          .toList(),
-                      onChanged: (item) => setState(() => selectedPlan = item),
-                    )),
-              ),
-              SizedBox(
-                height: 20,
-              ),
+              // Row(
+              //   children: [
+              //     Text(
+              //       "Plans:",
+              //       style: TextStyle(fontSize: 20, color: Colors.green[600]),
+              //     ),
+              //   ],
+              // ),
+              // SizedBox(
+              //   height: 10,
+              // ),
+              // Container(
+              //   decoration: BoxDecoration(
+              //       color: Colors.white,
+              //       borderRadius: BorderRadius.circular(20),
+              //       boxShadow: [
+              //         BoxShadow(
+              //             blurRadius: 10,
+              //             spreadRadius: 7,
+              //             offset: Offset(1, 1),
+              //             color: Colors.grey.withOpacity(0.2))
+              //       ]),
+              //   margin: EdgeInsets.only(top: 5, left: 3),
+              //   child: SizedBox(
+              //       width: w * 0.99,
+              //       child: DropdownButtonFormField<String>(
+              //         decoration: InputDecoration(
+              //           // enabledBorder: OutlineInputBorder(borderSide: BorderSide(width: 3,color:Colors.green)),
+              //           focusedBorder: OutlineInputBorder(
+              //               borderRadius: BorderRadius.circular(20),
+              //               borderSide:
+              //                   BorderSide(color: Colors.white, width: 1.0)),
+              //           enabledBorder: OutlineInputBorder(
+              //               borderRadius: BorderRadius.circular(30),
+              //               borderSide:
+              //                   BorderSide(color: Colors.white, width: 1.0)),
+              //           // border: OutlineInputBorder(
+              //           //     borderRadius: BorderRadius.circular(30))),
+              //         ),
+              //         value: selectedPlan,
+              //         items: plan
+              //             .map((item) =>
+              //                 DropdownMenuItem(value: item, child: Text(item)))
+              //             .toList(),
+              //         onChanged: (item) => setState(() => selectedPlan = item),
+              //       )),
+              // ),
+              // SizedBox(
+              //   height: 20,
+              // ),
               Row(
                 children: [
                   Text(
@@ -323,33 +345,46 @@ class _Slot_LoginState extends State<Slot_Login> {
               ),
               GestureDetector(
                 onTap: () async {
-                  await service.showNotificationWithPayload(
-                      id: 0,
-                      title: 'Notification Title',
-                      body: 'Some body',
-                      payload: 'payload navigation');
-                  Map<String, String> Req_for_slot = {
-                    'Name': nameController.text.trim(),
-                    'PlaceName': place_name,
-                    'email': auth.currentUser!.email.toString(),
-                    'mobile_number': mnoController.text.trim(),
-                    'date': dateController.text.trim(),
-                    'time_slot': selectedItem.toString(),
-                    'plan': selectedPlan.toString(),
-                  };
-                  if (Req_for_slot['Name'] != '') {
-                    if (Req_for_slot['mobile_number']?.length == 10) {
-                      if (Req_for_slot['date'] != '') {
-                        dbRef.push().set(Req_for_slot);
-                      } else {
-                        toast('Invalid date.');
-                      }
-                    } else {
-                      toast("Invalid mobile number.");
-                    }
-                  } else {
-                    toast("Name can not be null.");
-                  }
+                  // // await service.showNotificationWithPayload(
+                  // //     id: 0,
+                  // //     title: 'Slot Booking',
+                  // //     body: 'Your Request Sended',
+                  // //     payload: 'payload navigation');
+                  // Map<String, String> Req_for_slot = {
+                  //   'Name': nameController.text.trim(),
+                  //   'PlaceName': "${widget.area}",
+                  //   'email': auth.currentUser!.email.toString(),
+                  //   'mobile_number': mnoController.text.trim(),
+                  //   'date': dateController.text.trim(),
+                  //   'time_slot': selectedItem.toString(),
+                  //   'plan': selectedPlan.toString(),
+                  // };
+                  // if (Req_for_slot['Name'] != '') {
+                  //   if (Req_for_slot['mobile_number']?.length == 10) {
+                  //     if (Req_for_slot['date'] != '') {
+                  //       dbRef.push().set(Req_for_slot);
+                  //     } else {
+                  //       toast('Invalid date.');
+                  //     }
+                  //   } else {
+                  //     toast("Invalid mobile number.");
+                  //   }
+                  // } else {
+                  //   toast("Name can not be null.");
+                  // }
+
+                  await getUserFromDBUser();
+                  AuthController.instance.slotBook(
+                      nameController.text.trim(),
+                      "${widget.area}",
+                      auth.currentUser!.email.toString(),
+                      mnoController.text.trim(),
+                      dateController.text.trim(),
+                      selectedItem.toString(),
+                      selectedPlan.toString(),
+                      free,
+                      subscription,
+                      selectedItem.toString());
                 },
                 child: Container(
                     width: w * 0.5,
@@ -375,19 +410,5 @@ class _Slot_LoginState extends State<Slot_Login> {
         ),
       ),
     );
-  }
-
-  void listenToNotification() =>
-      service.onNotificationClick.stream.listen(onNoticationListener);
-
-  void onNoticationListener(String? payload) {
-    if (payload != null && payload.isNotEmpty) {
-      print('payload $payload');
-
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: ((context) => Notifications(payload: payload))));
-    }
   }
 }

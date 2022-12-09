@@ -685,6 +685,7 @@ class _Add_SlotState extends State<Add_Slot> {
                     'slot_address': addController.text,
                     'slot_pincode': pinController.text,
                     'total_slot': slotController.text,
+                    'free_slot': slotController.text,
                     'date': '26/11/2002',
                     'team_member_name': tnController.text,
                     'tid': tidController.text

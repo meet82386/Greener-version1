@@ -1,6 +1,7 @@
 //import 'dart:html';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Citizen/free_slot.dart';
 import '../Citizen/verify_email_page.dart';
 import 'database.dart';
 import 'package:email_validator/email_validator.dart';
@@ -33,7 +34,7 @@ class AuthController extends GetxController {
     Fluttertoast.showToast(
         msg: s,
         toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
+        gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
         backgroundColor: Colors.red,
         textColor: Colors.white,
@@ -52,6 +53,95 @@ class AuthController extends GetxController {
     //   DatabaseMethods().getUserFromDBUser()
     //
     // }
+  }
+
+  late DatabaseReference dbRef;
+
+  CollectionReference users =
+      FirebaseFirestore.instance.collection('AskToPlant');
+
+  Future<void> slotBook(
+      String name,
+      String area,
+      String email,
+      String mno,
+      String date,
+      String timeSlot,
+      String plan,
+      int? free,
+      int? subscription,
+      String selectedPlan) async {
+    late DatabaseReference dbRef =
+        FirebaseDatabase.instance.ref().child('AskToPlant');
+
+    // CollectionReference users =
+    // FirebaseFirestore.instance.collection('AskToPlant');
+    Map<String, String> ReqForSlot = {
+      'Name': name,
+      'PlaceName': area,
+      'email': email,
+      'mobile_number': mno,
+      'date': date,
+      'time_slot': timeSlot,
+      'plan': plan,
+    };
+    if (ReqForSlot['Name'] != '') {
+      if (ReqForSlot['mobile_number']?.length == 10) {
+        if (ReqForSlot['date'] != '') {
+          await dbRef.push().set(ReqForSlot);
+          toast('Slot Booked successfully.');
+          Get.offAll(() => Bottom_Nav());
+          if (plan == "Free") {
+            return FirebaseFirestore.instance
+                .collection("counter")
+                .doc('Zc46be3BLL4nniTDk72R')
+                .update({'free': free! + 1});
+          }
+          if (plan == 'Subscription') {
+            return FirebaseFirestore.instance
+                .collection("counter")
+                .doc('Zc46be3BLL4nniTDk72R')
+                .update({'paid': subscription! + 1});
+          }
+        } else {
+          toast('Invalid date.');
+        }
+      } else {
+        toast("Invalid mobile number.");
+      }
+    } else {
+      toast("Name can not be null.");
+    }
+  }
+
+  int? total;
+  int? tree_per_user = 0;
+  getPlan() async {
+    //return FirebaseFirestore.instance.collection('users').doc(userId).get();
+    final vari = await FirebaseFirestore.instance
+        .collection('counter')
+        .doc('Zc46be3BLL4nniTDk72R')
+        .get();
+    final vari2 = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(auth.currentUser!.uid)
+        .get();
+
+    total = vari.data()!['total_planted'];
+    tree_per_user = vari2.data()!['tree'];
+    return 1;
+  }
+
+  Future<void> TreeAdded(String? uid) async {
+    bool a = await getPlan();
+    var it = FirebaseFirestore.instance
+        .collection("counter")
+        .doc('Zc46be3BLL4nniTDk72R')
+        .update({'total_planted': total! + 1});
+    var it2 = FirebaseFirestore.instance
+        .collection("users")
+        .doc(auth.currentUser!.uid)
+        .set({'tree': tree_per_user! + 1});
   }
 
   Future<void> registerCitizen(String email, password, String fname,
@@ -76,9 +166,13 @@ class AuthController extends GetxController {
                   "mobile": number,
                   "birthDate": dob,
                   "role": "citizen",
+                  "tree": 0,
+                  "profile-image":
+                      'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__480.png',
                 };
                 DatabaseMethods()
                     .addUserInfoToDBUser(auth.currentUser!.uid, userInfoMap);
+                DatabaseMethods().initTreeConfig(auth.currentUser!.uid, email);
                 // for (int i = 0; i < 100; i++) {
                 //   DateTime diffDuration = DateTime(
                 //       birthDate.year + i, birthDate.month, birthDate.year);
@@ -130,7 +224,7 @@ class AuthController extends GetxController {
               numericRegex.hasMatch(password)) {
             if (mob.length == 10) {
               if (EmailValidator.validate(email)) {
-                UserCredential userCredential =
+                UserCredential usserCredential =
                     await auth.createUserWithEmailAndPassword(
                         email: email, password: password);
                 Map<String, dynamic> userInfoMap = {
@@ -140,7 +234,9 @@ class AuthController extends GetxController {
                   "lname": lname,
                   "mobile": number,
                   "TeamId": int.parse(teamID),
-                  "role": "teamMember"
+                  "role": "teamMember",
+                  "profile-image":
+                      'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460__480.png',
                 };
                 DatabaseMethods()
                     .addUserInfoToDBUser(auth.currentUser!.uid, userInfoMap);

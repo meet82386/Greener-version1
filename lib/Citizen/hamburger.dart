@@ -17,6 +17,7 @@ class _HamBurgerState extends State<HamBurger> {
   String fname = "a";
   String lname = "a";
   String email = "a";
+  String imageUrl = '';
 
   void getData() async {
     User? user = await FirebaseAuth.instance.currentUser;
@@ -28,6 +29,7 @@ class _HamBurgerState extends State<HamBurger> {
       fname = vari.data()!['fname'];
       lname = vari.data()!['lname'];
       email = vari.data()!['email'];
+      imageUrl = vari.data()!['profile-image'];
     });
   }
 
@@ -45,7 +47,7 @@ class _HamBurgerState extends State<HamBurger> {
             Container(
               width: double.infinity,
               padding: EdgeInsets.all(20),
-              color: Colors.green[900],
+              color: Colors.green,
               child: Center(
                 child: Column(
                   children: <Widget>[
@@ -58,57 +60,44 @@ class _HamBurgerState extends State<HamBurger> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                            image: NetworkImage(
-                                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQNvWDvQb_rCtRL-p_w329CtzHmfzfWP0FIw&usqp=CAU'),
+                            image: NetworkImage(imageUrl),
                             fit: BoxFit.fill),
                       ),
                     ),
-                    Container(
-                      height: 20,
-                      width: 100,
-                      margin: EdgeInsets.only(right: 40, left: 60),
-                      child: Row(
-                        children: <Widget>[
+                    SizedBox(
+                      height: 5,
+                            ),
                           Text(
-                            fname,
+                             '$fname $lname',
                             style: TextStyle(
                               fontSize: 20,
+                              color: Colors.white
                             ),
                           ),
-                          Text(" "),
-                          Text(
-                            lname,
-                            style: TextStyle(
-                              fontSize: 20,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                     Text(
                       email,
-                      style: TextStyle(fontSize: 20),
+                      style: TextStyle(fontSize: 20, color: Colors.white),
                     ),
                   ],
                 ),
               ),
             ),
-            ListTile(
-              leading: Icon(Icons.person),
-              title: Text(
-                'Profile',
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ProfileInfo(),
-                    ));
-              },
-            ),
+            // ListTile(
+            //   leading: Icon(Icons.person),
+            //   title: Text(
+            //     'Profile',
+            //     style: TextStyle(
+            //       fontSize: 18,
+            //     ),
+            //   ),
+            //   onTap: () {
+            //     Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //           builder: (context) => ProfileInfo(),
+            //         ));
+            //   },
+            // ),
             ListTile(
               leading: Icon(Icons.edit),
               title: Text(
@@ -141,36 +130,36 @@ class _HamBurgerState extends State<HamBurger> {
                     ));
               },
             ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text(
-                'Settings',
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-              onTap: null,
-            ),
-            ListTile(
-              leading: Icon(Icons.privacy_tip),
-              title: Text(
-                'Privacy',
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-              onTap: null,
-            ),
-            ListTile(
-              leading: Icon(Icons.security),
-              title: Text(
-                'Security',
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-              onTap: null,
-            ),
+            // ListTile(
+            //   leading: Icon(Icons.settings),
+            //   title: Text(
+            //     'Settings',
+            //     style: TextStyle(
+            //       fontSize: 18,
+            //     ),
+            //   ),
+            //   onTap: null,
+            // ),
+            // ListTile(
+            //   leading: Icon(Icons.privacy_tip),
+            //   title: Text(
+            //     'Privacy',
+            //     style: TextStyle(
+            //       fontSize: 18,
+            //     ),
+            //   ),
+            //   onTap: null,
+            // ),
+            // ListTile(
+            //   leading: Icon(Icons.security),
+            //   title: Text(
+            //     'Security',
+            //     style: TextStyle(
+            //       fontSize: 18,
+            //     ),
+            //   ),
+            //   onTap: null,
+            // ),
             ListTile(
               leading: Icon(Icons.logout),
               title: Text(

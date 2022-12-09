@@ -18,8 +18,18 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:screenshot/screenshot.dart';
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_database/ui/firebase_animated_list.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
+
 import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
+
+import '../controllers/auth_controller.dart';
 
 class SWT extends StatefulWidget {
   const SWT({Key? key}) : super(key: key);
@@ -33,6 +43,9 @@ class _SWTState extends State<SWT> {
   String Address = 'search';
   String imageUrl = '';
   var file;
+
+  final CollectionReference notif =
+      FirebaseFirestore.instance.collection('place otp');
 
   Future<Position> _getGeoLocationPosition() async {
     bool serviceEnabled;
@@ -117,7 +130,7 @@ class _SWTState extends State<SWT> {
 
   final controller = ScreenshotController();
 
-  late String tname, cele, about;
+  late String key, tname, cele, about, place;
 
   CollectionReference users = FirebaseFirestore.instance.collection('scanner');
   FirebaseAuth auth = FirebaseAuth.instance;
@@ -149,6 +162,52 @@ class _SWTState extends State<SWT> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
+                    Row(
+                      children: [
+                        Text(
+                          "Plantation Key:",
+                          style:
+                              TextStyle(fontSize: 20, color: Colors.green[600]),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                                blurRadius: 10,
+                                spreadRadius: 7,
+                                offset: Offset(1, 1),
+                                color: Colors.grey.withOpacity(0.2))
+                          ]),
+                      child: TextField(
+                        onChanged: (value) {
+                          key = value;
+                        },
+                        // controller: fnameController,
+                        decoration: InputDecoration(
+                            hintText: "Enter Plantation Key",
+                            // prefixIcon: Icon(Icons.nam, color:Colors.green),
+                            focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20),
+                                borderSide: BorderSide(
+                                    color: Colors.white, width: 1.0)),
+                            enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30),
+                                borderSide: BorderSide(
+                                    color: Colors.white, width: 1.0)),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(30))),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
                     Row(
                       children: [
                         Text(
@@ -490,6 +549,51 @@ class _SWTState extends State<SWT> {
                     ),
                     GestureDetector(
                       onTap: () async {
+                        if (await isDE(key)) {
+                          // String pl;
+                          var vari = await FirebaseFirestore.instance
+                              .collection("place otp")
+                              .doc(key)
+                              .get();
+                          setState(() {
+                            place = vari.data()!['place'];
+                          });
+
+                          // var vlRef = FirebaseDatabase.instance.reference().child("AddNewSlot");
+                          // vlRef.update({
+                          //   "free_slot": int.parse(count)+1,
+                          // }).then((_) {
+                          //
+                          // }).catchError((onError) {
+                          //   // Scaffold.of(context).showSnackBar(SnackBar(content: Text(onError)));
+                          // });
+                        }
+                        ;
+
+                        print(place);
+
+                        // getDetails(key);
+
+                        // FirebaseFirestore.instance
+                        //     .collection('place otp')
+                        //     .doc(key)
+                        //     .get();
+
+                        // var
+                        // doc=FirebaseFirestore.instance
+                        //     .collection('place otp')
+                        //     .where("id", isEqualTo:
+                        // key)
+                        //     .get();
+                        //
+                        // print(doc);
+                        //
+                        // if (doc == null) {
+                        //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        //       content: Text('Please Enter Valid Key')));
+                        //
+                        //   return;
+                        // }
                         if (file == null) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text('Please upload an image')));
@@ -535,7 +639,6 @@ class _SWTState extends State<SWT> {
                               },
                             ]),
                           });
-
                           String datetime = DateTime.now().toString();
                           // String did = mo + datetime;
 
@@ -631,4 +734,88 @@ class _SWTState extends State<SWT> {
           ),
         ],
       );
+
+  // Widget getDetails(String key){
+  //   return FutureBuilder(
+  //       future: notif.doc(key).get(),
+  //       builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot){
+  //         if(snapshot.hasError){
+  //           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //               content: Text('Something went Wrong')));
+  //           return Text("Something went Wrong");
+  //         }
+  //         if(snapshot.hasData && !snapshot.data!.exists){
+  //           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //               content: Text('Document does not exist')));
+  //           return Text("Document does not exist");
+  //         }
+  //         if(snapshot.connectionState == ConnectionState.done){
+  //           Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
+  //           // return Text("Tree Name: ${data['Tree_Name']} ${data['Celebration']}");
+  //           return SingleChildScrollView(
+  //             child: Container(
+  //               margin: EdgeInsets.all(12),
+  //               child: Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 mainAxisAlignment: MainAxisAlignment.start,
+  //                 children: [
+  //                   // Center(
+  //                   //   child: Container(
+  //                   //     width: 250,
+  //                   //     height: 250,
+  //                   //     // margin: EdgeInsets.only(
+  //                   //     //   top: 30,
+  //                   //     // ),
+  //                   //     decoration: BoxDecoration(
+  //                   //       shape: BoxShape.circle,
+  //                   //       image: DecorationImage(
+  //                   //           image: NetworkImage(data['Image_Url']),
+  //                   //           fit: BoxFit.fill
+  //                   //       ),
+  //                   //     ),
+  //                   //   ),
+  //                   // ),
+  //                   // SizedBox(height: 8,),
+  //                   // Text("Tree Name: ${data['Tree_Name']}", style: TextStyle(fontSize: 20, color: Colors.black), maxLines: 2,),
+  //                   // SizedBox(height: 8,),
+  //                   // Text("Celebration: ${data['Celebration']}", style: TextStyle(fontSize: 20, color: Colors.black), maxLines: 2,),
+  //                   // SizedBox(height: 8,),
+  //                   // Text("About Celebration: ${data['About_Celebration']}", style: TextStyle(fontSize: 20, color: Colors.black), maxLines: 10,),
+  //                 ],
+  //               ),
+  //             ),
+  //           );
+  //         }
+  //         return Text("loading");
+  //       }
+  //   );
+  // }
+
+  // Future<String> p(String docName) async {
+  //   String pl;
+  //   if(await isDE(docName)){
+  //     var vari = await FirebaseFirestore.instance
+  //         .collection("place otp")
+  //         .doc(docName)
+  //         .get();
+  //     setState(() {
+  //       pl = vari.data()!['place'];
+  //     });
+  //     return pl;
+  //   }
+  // }
+
+  Future<bool> isDE(String docName) async {
+    DocumentSnapshot<Map<String, dynamic>> document = await FirebaseFirestore
+        .instance
+        .collection("place otp")
+        .doc(docName)
+        .get();
+
+    if (document.exists) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }

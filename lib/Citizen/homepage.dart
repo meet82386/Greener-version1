@@ -59,7 +59,7 @@ class _HomePageState extends State<HomePage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => Notifications(
-                        payload: 'Notification',
+                        // payload: 'Notification',
                       ),
                     ))
               },
@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> {
                   width: width * 0.96,
                   child: Center(
                       child: Text(
-                    "Hey, Good Morning $Name",
+                    "Hey, Welcome $Name",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,

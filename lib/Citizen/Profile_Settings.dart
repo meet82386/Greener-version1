@@ -30,6 +30,7 @@ class _Profile_SettingsState extends State<Profile_Settings> {
       lnameController.text = doc.get('lname');
       mobileController.text = doc.get('mobile').toString();
       dobController.text = doc.get('birthDate');
+      marriageController.text = doc.get('marriageDate');
     }
 
     setState(() {});
@@ -89,6 +90,7 @@ class _Profile_SettingsState extends State<Profile_Settings> {
   TextEditingController lnameController = TextEditingController();
   TextEditingController mobileController = TextEditingController();
   TextEditingController dobController = TextEditingController();
+  TextEditingController marriageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +99,7 @@ class _Profile_SettingsState extends State<Profile_Settings> {
     return Scaffold(
       backgroundColor: Colors.green[200],
       appBar: AppBar(
-        title: Text('Profile Settings'),
+        title: Text('Edit Profile'),
         backgroundColor: Colors.green,
       ),
       body: SingleChildScrollView(
@@ -330,7 +332,7 @@ class _Profile_SettingsState extends State<Profile_Settings> {
                               color: Colors.grey.withOpacity(0.2))
                         ]),
                     child: TextField(
-                      controller: dobController,
+                      controller: marriageController,
                       decoration: InputDecoration(
                           hintText: "dd/mm/yyyy",
                           // prefixIcon: Icon(Icons.email, color:Colors.green),
@@ -549,6 +551,7 @@ class _Profile_SettingsState extends State<Profile_Settings> {
                         "lname": lnameController.text,
                         "mobile": mobileController.text,
                         "birthDate": dobController.text,
+                        "marriageDate": marriageController.text,
                       });
                     },
                     child: Center(

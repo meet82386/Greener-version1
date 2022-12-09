@@ -17,6 +17,14 @@ class DatabaseMethods {
         .set(userInfoMap);
   }
 
+  Future initTreeConfig(String uid, String email) {
+    return FirebaseFirestore.instance.collection("counter").doc(uid).set({
+      'free': 0,
+      'subscription': 0,
+      'email': email,
+    });
+  }
+
   /*Future<DocumentSnapshot>*/ void getUserFromDBUser(String mail) async {
     //return FirebaseFirestore.instance.collection('users').doc(userId).get();
     String rol = '';

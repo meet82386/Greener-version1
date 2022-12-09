@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
@@ -14,19 +15,39 @@ class AMC_Completed extends StatefulWidget {
 }
 
 class _AMC_CompletedState extends State<AMC_Completed> {
-  Query dbRef = FirebaseDatabase.instance.ref().child('Accepted');
+  var dbRef = FirebaseDatabase.instance.ref().child('Accepted');
   DatabaseReference reference =
       FirebaseDatabase.instance.ref().child('Accepted');
+
+  int? count;
+  getPlan() async {
+    //return FirebaseFirestore.instance.collection('users').doc(userId).get();
+    final vari = await FirebaseFirestore.instance
+        .collection('counter')
+        .doc('Zc46be3BLL4nniTDk72R')
+        .get();
+    setState(() {
+      count = vari.data()!['accepted'];
+    });
+    return 1;
+  }
 
   Widget listItem({required Map student}) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.green[300],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.white.withOpacity(0.5),
+            spreadRadius: 5,
+            blurRadius: 7,
+          ),
+        ],
+        color: Colors.green,
+        borderRadius: BorderRadius.circular(10),
       ),
       margin: const EdgeInsets.all(10),
       padding: const EdgeInsets.all(8),
-      height: 210,
+      height: 205,
       // color: Colors.green[300],
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -56,7 +77,7 @@ class _AMC_CompletedState extends State<AMC_Completed> {
           Row(
             children: [
               Text(
-                'Place NAme : ',
+                'Place Name : ',
                 style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
@@ -137,27 +158,27 @@ class _AMC_CompletedState extends State<AMC_Completed> {
           const SizedBox(
             height: 5,
           ),
-          Row(
-            children: [
-              Text(
-                'Plan : ',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.white70),
-              ),
-              Text(
-                student['plan'],
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.white),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 5,
-          ),
+          // Row(
+          //   children: [
+          //     Text(
+          //       'Plan : ',
+          //       style: TextStyle(
+          //           fontSize: 16,
+          //           fontWeight: FontWeight.w400,
+          //           color: Colors.white70),
+          //     ),
+          //     Text(
+          //       student['plan'],
+          //       style: TextStyle(
+          //           fontSize: 16,
+          //           fontWeight: FontWeight.w400,
+          //           color: Colors.white),
+          //     ),
+          //   ],
+          // ),
+          // const SizedBox(
+          //   height: 5,
+          // ),
           Row(
             children: [
               Text(
@@ -248,30 +269,43 @@ class _AMC_CompletedState extends State<AMC_Completed> {
 
   @override
   Widget build(BuildContext context) {
+    getPlan();
     return Scaffold(
       appBar: AppBar(
         title: Text("Completed"),
+        backgroundColor: Colors.green,
         actions: [
-          Tooltip(
-            message: 'Log Out',
-            child: IconButton(
-                onPressed: () {
-                  AuthController.instance.logout();
-                },
-                icon: Icon(Icons.logout)),
-          )
-        ],
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.green, Colors.lightGreen],
-              begin: Alignment.bottomRight,
-              end: Alignment.topLeft,
-            ),
-          ),
+      Center(
+      child: Text(
+      "Total: $count  ",
+        style: TextStyle(
+          // fontWeight: FontWeight.bold,
+          fontSize: 16,
         ),
-        elevation: 20,
-        titleSpacing: 20,
+      ),
+    )
+    ]
+        // actions: [
+        //   Tooltip(
+        //     message: 'Log Out',
+        //     child: IconButton(
+        //         onPressed: () {
+        //           AuthController.instance.logout();
+        //         },
+        //         icon: Icon(Icons.logout)),
+        //   )
+        // ],
+        // flexibleSpace: Container(
+        //   decoration: BoxDecoration(
+        //     gradient: LinearGradient(
+        //       colors: [Colors.green, Colors.lightGreen],
+        //       begin: Alignment.bottomRight,
+        //       end: Alignment.topLeft,
+        //     ),
+        //   ),
+        // ),
+        // elevation: 20,
+        // titleSpacing: 20,
       ),
       body: Container(
         color: Colors.green[200],

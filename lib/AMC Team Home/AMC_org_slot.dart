@@ -21,12 +21,19 @@ class _AMC_SlotState extends State<AMC_Slot> {
   Widget listItem({required Map student}) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        color: Colors.green[300],
+        boxShadow: [
+          BoxShadow(
+            color: Colors.white.withOpacity(0.5),
+            spreadRadius: 5,
+            blurRadius: 7,
+          ),
+        ],
+        color: Colors.green,
+        borderRadius: BorderRadius.circular(10),
       ),
       margin: const EdgeInsets.all(10),
       padding: const EdgeInsets.all(8),
-      height: 210,
+      height: 225,
       // color: Colors.green[300],
       child: ListView(
         physics: BouncingScrollPhysics(),
@@ -250,27 +257,28 @@ class _AMC_SlotState extends State<AMC_Slot> {
     return Scaffold(
       appBar: AppBar(
         title: Text("AMC Team"),
-        actions: [
-          Tooltip(
-            message: 'Log Out',
-            child: IconButton(
-                onPressed: () {
-                  AuthController.instance.logout();
-                },
-                icon: Icon(Icons.logout)),
-          )
-        ],
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.green, Colors.lightGreen],
-              begin: Alignment.bottomRight,
-              end: Alignment.topLeft,
-            ),
-          ),
-        ),
-        elevation: 20,
-        titleSpacing: 20,
+        backgroundColor: Colors.green,
+        // actions: [
+        //   Tooltip(
+        //     message: 'Log Out',
+        //     child: IconButton(
+        //         onPressed: () {
+        //           AuthController.instance.logout();
+        //         },
+        //         icon: Icon(Icons.logout)),
+        //   )
+        // ],
+        // flexibleSpace: Container(
+        //   decoration: BoxDecoration(
+        //     gradient: LinearGradient(
+        //       colors: [Colors.green, Colors.lightGreen],
+        //       begin: Alignment.bottomRight,
+        //       end: Alignment.topLeft,
+        //     ),
+        //   ),
+        // ),
+        // elevation: 20,
+        // titleSpacing: 20,
       ),
       body: Container(
         color: Colors.green[200],
@@ -288,12 +296,12 @@ class _AMC_SlotState extends State<AMC_Slot> {
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Add New Slot',
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.white,
         onPressed: () {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => Add_Slot()));
         },
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color: Colors.green, size: 35,),
       ),
     );
   }

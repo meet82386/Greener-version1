@@ -73,16 +73,16 @@ class _Bottom_NavState extends State<Bottom_Nav> with TickerProviderStateMixin {
                 iconMargin: EdgeInsets.only(bottom: 4),
                 icon: Icon(Icons.park),
                 child: Text(
-                  'Tree',
+                  'Slot',
                   style: TextStyle(fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               Tab(
                 iconMargin: EdgeInsets.only(bottom: 4),
-                icon: Icon(Icons.book),
+                icon: Icon(Icons.camera_front),
                 child: Text(
-                  'Growth',
+                  'SWT',
                   style: TextStyle(fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
