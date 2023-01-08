@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_database/ui/firebase_animated_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
+import 'package:greener_v1/Citizen/homepage.dart';
+import 'package:http/http.dart' as http;
 
 import '../controllers/auth_controller.dart';
 import '../user.dart';
@@ -15,15 +20,48 @@ class AMC_Home extends StatefulWidget {
   const AMC_Home({Key? key}) : super(key: key);
 
   @override
-  State<AMC_Home> createState() => _AMC_HomeState();
+  State<AMC_Home> createState() => AMC_HomeState();
 }
 
-class _AMC_HomeState extends State<AMC_Home> {
+class AMC_HomeState extends State<AMC_Home> {
   int accept = 0, delete = 0;
 
   String mname = "";
 
   String tid = "";
+
+  var token = HomePageState().getToken.toString();
+  void sendPushmessage(String token, String body, String title) async {
+    try {
+      await http.post(
+        Uri.parse('https://fcm.googleapis.com/fcm/send'),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization':
+              'key=AAAAS0spKYE:APA91bGl_melbX4I_jj5GSi2FlumbYuX_Kivmbbp2ifpruF7qQwWtDNYksFEJC14HxLDYYiCoadztRQE6C0ET4p85zpWvvKBGva03UwNYwPF8gWMp0c1XW6NkfK2lfPhE6yHwkm2aUsY'
+        },
+        body: jsonEncode(<String, dynamic>{
+          'priority': 'high',
+          'data': <String, dynamic>{
+            'click-action': 'FLUTTER_NOTIFICATION_CLICK',
+            'status': 'done',
+            'body': body,
+            'title': title,
+          },
+          "notification": <String, dynamic>{
+            "title": title,
+            "body": body,
+            "android_channel_id": "Greener"
+          },
+          "to": token,
+        }),
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
+  }
 
   void getData() async {
     var user = await FirebaseAuth.instance.currentUser;
@@ -263,6 +301,9 @@ class _AMC_HomeState extends State<AMC_Home> {
                       MaterialStateProperty.all<Color>(Colors.green),
                 ),
                 onPressed: () async {
+                  int timestamp = DateTime.now().millisecondsSinceEpoch;
+                  sendPushmessage(token, "Your Otp is $timestamp.",
+                      " Request Accepted, Now You Can Plant A Tree.");
                   // showAlertDialog(student: student);
                   if (mname != null && tid != null) {
                     Map<String, String> add_new_slot = {
@@ -285,8 +326,6 @@ class _AMC_HomeState extends State<AMC_Home> {
 
                     String tdata =
                         DateFormat("hh:mm:ss a").format(DateTime.now());
-
-                    int timestamp = DateTime.now().millisecondsSinceEpoch;
 
                     await otp.doc(timestamp.toString()).set({
                       'id': timestamp.toString(),
@@ -365,6 +404,8 @@ class _AMC_HomeState extends State<AMC_Home> {
                   foregroundColor: MaterialStateProperty.all<Color>(Colors.red),
                 ),
                 onPressed: () async {
+                  sendPushmessage(token, "We Are Sorry! ",
+                      " Request Rejected, Please Try Again Later.");
                   if (mname != null && tid != null) {
                     Map<String, String> add_new_slot = {
                       'Name': name,

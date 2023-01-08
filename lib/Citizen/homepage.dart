@@ -1,20 +1,43 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import 'notification.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   String email = "Email Loading...";
   String Name = '';
   FirebaseAuth auth = FirebaseAuth.instance;
+
+  String? mtoken = " ";
+
+  getToken() async {
+    await FirebaseMessaging.instance.getToken().then((token) {
+      setState(() {
+        mtoken = token;
+        print("My Token is $mtoken");
+      });
+      saveToken(token!);
+    });
+  }
+
+  void saveToken(String token) async {
+    User? user = await FirebaseAuth.instance.currentUser;
+    var vari = await FirebaseFirestore.instance
+        .collection("users")
+        .doc(user?.uid)
+        .update({"token": token});
+  }
 
   void getUserFromDBUser() async {
     //return FirebaseFirestore.instance.collection('users').doc(userId).get();
@@ -30,6 +53,75 @@ class _HomePageState extends State<HomePage> {
       // Lname = doc.get('lnmae');
     }
     setState(() {});
+  }
+
+  void requestPermission() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      announcement: true,
+      badge: true,
+      carPlay: true,
+      criticalAlert: false,
+      provisional: false,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print("User granted permission");
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
+      print("User granted provisional permission");
+    } else {
+      print("User declined or has not granted permission");
+    }
+  }
+
+  late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
+  initInfo() {
+    var androidInitialize =
+        const AndroidInitializationSettings('@mipmap/ic_launcher');
+    var initializationSettings =
+        InitializationSettings(android: androidInitialize);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      print(".............onMessage............");
+      print(
+          "onMessage : ${message.notification?.title}/${message.notification?.body}}");
+
+      BigTextStyleInformation bigTextStyleInformation = BigTextStyleInformation(
+        message.notification!.body.toString(),
+        htmlFormatBigText: true,
+        contentTitle: message.notification!.title.toString(),
+        htmlFormatContentTitle: true,
+      );
+      AndroidNotificationDetails androidPlatformChannelSpecifics =
+          AndroidNotificationDetails(
+        'Greener',
+        'greeners',
+        importance: Importance.high,
+        styleInformation: bigTextStyleInformation,
+        priority: Priority.high,
+        playSound: true,
+      );
+      NotificationDetails platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+      );
+      await flutterLocalNotificationsPlugin.show(0, message.notification?.title,
+          message.notification?.body, platformChannelSpecifics,
+          payload: message.data['body']);
+    });
+  }
+
+  void initState() {
+    requestPermission();
+    initInfo();
+    getToken();
+    super.initState();
   }
 
   @override
@@ -59,8 +151,8 @@ class _HomePageState extends State<HomePage> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => Notifications(
-                        // payload: 'Notification',
-                      ),
+                          // payload: 'Notification',
+                          ),
                     ))
               },
             ),
